@@ -1,7 +1,7 @@
-use vibecode_macros::add;
+use vibecode::vibecode;
 
-#[add]
-pub fn macro_add() {
+#[vibecode]
+pub fn my_vibecoded_function() {
     println!("This function has a body, which is not allowed.");
 }
 

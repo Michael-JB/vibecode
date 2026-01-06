@@ -1,10 +1,12 @@
 use proc_macro::TokenStream;
 use syn::{ItemFn, parse_macro_input};
 
+mod ai_responder;
 mod attribute;
+mod openai;
 
 #[proc_macro_attribute]
-pub fn add(_attr: TokenStream, annotated_item: TokenStream) -> TokenStream {
+pub fn vibecode(_attr: TokenStream, annotated_item: TokenStream) -> TokenStream {
     let item_string = annotated_item.to_string();
 
     let ast = parse_macro_input!(annotated_item as ItemFn);
@@ -12,5 +14,5 @@ pub fn add(_attr: TokenStream, annotated_item: TokenStream) -> TokenStream {
         panic!("The function body must be empty");
     }
 
-    attribute::impl_add(&item_string)
+    attribute::impl_vibecode(&item_string)
 }
