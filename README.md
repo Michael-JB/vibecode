@@ -26,9 +26,19 @@ let result = special_sort(vec![1, 4, 2, 3, 1]);
 assert_eq!(result, vec![4, 3, 2, 1, 1]);
 ```
 
+You can also generate and evaluate code inline:
+
+```rust
+use vibecode::viberun;
+
+let result = viberun!("Calculate the factorial of a number", 5);
+
+assert_eq!(result, 120);
+```
+
 ## TODOs
 
 - [x] Support attribute macro for function signatures
 - [x] Take user prompt as input to attribute macro
-- [ ] Add function macro that takes user prompt as input
+- [x] Add function macro that takes user prompt as input
 - [ ] Support injection of OpenAI-compatible API client

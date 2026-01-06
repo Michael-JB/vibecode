@@ -20,10 +20,10 @@ pub fn impl_vibecode(signature: &str, prompt: Option<&str>) -> TokenStream {
         &input,
     );
 
-    println!("Vibecoded function:\n{:?}", response);
+    println!("Vibecoded function: {:?}", response);
 
     response
         .expect("No text found in response")
         .parse()
-        .expect("Failed to parse vibecoded function")
+        .expect("Failed to parse vibecoded closure to a token stream")
 }

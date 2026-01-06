@@ -1,8 +1,15 @@
 use proc_macro::TokenStream;
-use syn::{ItemFn, parse_macro_input};
+use quote::quote;
+use syn::{
+    Expr, ItemFn, LitStr, Token,
+    parse::{Parse, ParseStream},
+    parse_macro_input,
+    punctuated::Punctuated,
+};
 
 mod ai_responder;
 mod attribute;
+mod function;
 mod openai;
 
 use darling::FromMeta;
@@ -29,4 +36,32 @@ pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
     }
 
     attribute::impl_vibecode(&item_string, args.prompt.as_deref())
+}
+
+struct ViberunArgs {
+    prompt: LitStr,
+    args: Punctuated<Expr, Token![,]>,
+}
+
+impl Parse for ViberunArgs {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let prompt: LitStr = input.parse()?;
+        let _: Option<Token![,]> = input.parse()?;
+        let args = Punctuated::parse_terminated(input)?;
+        Ok(ViberunArgs { prompt, args })
+    }
+}
+
+#[proc_macro]
+pub fn viberun(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as ViberunArgs);
+
+    let args = &input.args;
+    let closure = function::impl_viberun(&input.prompt.value());
+
+    let call_closure = quote! {
+        (#closure)(#args)
+    };
+
+    TokenStream::from(call_closure)
 }
