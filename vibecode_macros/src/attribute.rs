@@ -7,7 +7,7 @@ pub fn impl_vibecode(signature: &str) -> TokenStream {
     let openai = OpenAI::default().expect("Failed to create OpenAI client");
 
     let response = openai.respond(
-        "gpt-5-mini",
+        "gpt-5-nano",
         "Implement the given function in Rust. You must ONLY return the implementation code without any explanation.",
         signature,
     );
