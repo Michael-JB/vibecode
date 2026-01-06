@@ -5,7 +5,12 @@ mod attribute;
 
 #[proc_macro_attribute]
 pub fn add(_attr: TokenStream, annotated_item: TokenStream) -> TokenStream {
-    let ast = parse_macro_input!(annotated_item as ItemFn);
+    let item_string = annotated_item.to_string();
 
-    attribute::impl_add(&ast)
+    let ast = parse_macro_input!(annotated_item as ItemFn);
+    if !ast.block.stmts.is_empty() {
+        panic!("The function body must be empty");
+    }
+
+    attribute::impl_add(&item_string)
 }
