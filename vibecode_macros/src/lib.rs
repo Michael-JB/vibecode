@@ -1,14 +1,11 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use proc_macro::TokenStream;
+use syn::{ItemFn, parse_macro_input};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod attribute;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[proc_macro_attribute]
+pub fn add(attr: TokenStream, annotated_item: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(annotated_item as ItemFn);
+
+    attribute::impl_add(&ast)
 }
