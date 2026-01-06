@@ -45,6 +45,9 @@ struct ViberunArgs {
 
 impl Parse for ViberunArgs {
     fn parse(input: ParseStream) -> syn::Result<Self> {
+        if input.is_empty() {
+            return Err(input.error("viberun! requires at least a prompt string"));
+        }
         let prompt: LitStr = input.parse()?;
         let _: Option<Token![,]> = input.parse()?;
         let args = Punctuated::parse_terminated(input)?;
