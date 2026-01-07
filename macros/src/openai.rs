@@ -1,4 +1,5 @@
 use crate::ai_responder::{AIError, AIResponder, Complexity};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -7,9 +8,8 @@ pub struct Auth {
 }
 
 impl Auth {
-    pub fn from_env() -> Result<Self, String> {
-        let api_key =
-            std::env::var("OPENAI_API_KEY").map_err(|_| "Missing OPENAI_API_KEY".to_string())?;
+    pub fn from_env() -> Result<Self> {
+        let api_key = std::env::var("OPENAI_API_KEY")?;
         Ok(Auth { api_key })
     }
 }
@@ -67,7 +67,7 @@ impl Response {
 }
 
 impl OpenAI {
-    pub fn default() -> Result<OpenAI, String> {
+    pub fn default() -> Result<OpenAI> {
         let auth = Auth::from_env()?;
         Ok(OpenAI::new(auth, "https://api.openai.com/v1"))
     }

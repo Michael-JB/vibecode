@@ -7,9 +7,11 @@ edition = "2024"
 proc-macro = true
 
 [dependencies]
+anyhow = "1.0.100"
 darling = "0.23.0"
+proc-macro2 = "1.0.105"
 quote = "1.0.43"
 serde = { version = "1.0.228", features = ["derive"] }
-syn = { version = "2.0.113", features = ["full"] }
+syn = { version = "2.0.113", features = ["full", "proc-macro"] }
 thiserror = "2.0.17"
 ureq = { version = "3.1.4", features = ["json"] }

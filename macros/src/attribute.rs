@@ -1,13 +1,13 @@
 use crate::ai_responder::{AIResponder, Complexity};
 use crate::openai::OpenAI;
-use proc_macro::TokenStream;
+use anyhow::Result;
 
-pub fn impl_vibecode(
+pub fn populate_function(
     complexity: &Complexity,
     signature: &str,
     prompt: Option<&str>,
-) -> TokenStream {
-    let openai = OpenAI::default().expect("Failed to create OpenAI client");
+) -> Result<String> {
+    let openai = OpenAI::default()?;
 
     let input = match prompt {
         Some(p) => format!(
@@ -21,12 +21,10 @@ pub fn impl_vibecode(
         complexity,
         "Implement the given function in Rust. You must ONLY return the implementation code without any explanation.",
         &input,
-    );
+    )?;
 
-    println!("Vibecoded function: {:?}", response);
+    eprintln!("--- Vibecoded function ---");
+    eprintln!("{}", response);
 
-    response
-        .expect("No text found in response")
-        .parse()
-        .expect("Failed to parse vibecoded closure to a token stream")
+    Ok(response)
 }

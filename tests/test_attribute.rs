@@ -1,4 +1,4 @@
-use vibecode::{vibecode, viberun};
+use vibecode::vibecode;
 
 #[cfg(test)]
 mod tests {
@@ -18,7 +18,7 @@ mod tests {
     }
 
     #[test]
-    fn vibecode_accepts_prompt() {
+    fn vibecode_can_sort() {
         // Given
         #[vibecode(prompt = "Sort in descending order")]
         fn sort(values: Vec<u64>) -> Vec<u64> {}
@@ -31,7 +31,7 @@ mod tests {
     }
 
     #[test]
-    fn vibecode_accepts_complexity() {
+    fn vibecode_can_compute_primes() {
         // Given
         #[vibecode(
             prompt = "Compute all prime numbers up to the given limit",
