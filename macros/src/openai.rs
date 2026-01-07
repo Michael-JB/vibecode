@@ -1,6 +1,7 @@
-use crate::ai_responder::{AIError, AIResponder, Complexity};
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
+
+use crate::ai_responder::{AIError, AIResponder, Complexity};
 
 #[derive(Serialize, Deserialize)]
 pub struct Auth {
@@ -9,7 +10,8 @@ pub struct Auth {
 
 impl Auth {
     pub fn from_env() -> Result<Self> {
-        let api_key = std::env::var("OPENAI_API_KEY")?;
+        let api_key = std::env::var("OPENAI_API_KEY")
+            .map_err(|e| anyhow!("Failed to read OPENAI_API_KEY from environment: {}", e))?;
         Ok(Auth { api_key })
     }
 }

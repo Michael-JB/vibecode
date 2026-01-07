@@ -11,9 +11,8 @@ use syn::{
 use crate::ai_responder::Complexity;
 
 mod ai_responder;
-mod attribute;
-mod function;
 mod openai;
+mod vibecode;
 
 #[derive(FromMeta)]
 #[darling(derive_syn_parse)]
@@ -55,7 +54,7 @@ fn _vibecode(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenSt
     }
 
     Ok(
-        attribute::populate_function(&args.complexity, &item_string, args.prompt.as_deref())
+        vibecode::populate_function(&args.complexity, &item_string, args.prompt.as_deref())
             .map_err(|e| {
                 syn::Error::new_spanned(&ast.sig, format!("Failed to vibecode function: {}", e))
             })?
@@ -87,7 +86,7 @@ fn _viberun(input: TokenStream2) -> syn::Result<TokenStream2> {
     let args = &input.args;
     // TODO make complexity configurable
     let closure =
-        function::generate_closure(&Complexity::Low, &input.prompt.value()).map_err(|e| {
+        vibecode::generate_closure(&Complexity::Low, &input.prompt.value()).map_err(|e| {
             syn::Error::new_spanned(&input.prompt, format!("Failed to vibecode closure: {}", e))
         })?;
 
