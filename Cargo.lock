@@ -790,11 +790,11 @@ name = "vibecode"
 version = "0.1.0"
 dependencies = [
  "trybuild",
- "vibecode_macros",
+ "vibecode-macros",
 ]
 
 [[package]]
-name = "vibecode_macros"
+name = "vibecode-macros"
 version = "0.1.0"
 dependencies = [
  "darling",
