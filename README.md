@@ -1,6 +1,7 @@
 # vibecode
 
-Compile-time vibe coding!
+Tired of fast, reproducible and secure builds? Introducing compile-time vibe
+coding!
 
 ```rust
 use vibecode::vibecode;
@@ -12,6 +13,8 @@ let result = sum(vec![27, 14, 42, -4, 32]);
 
 assert_eq!(result, 111); // That's numberwang!
 ```
+
+## Tell me more!
 
 You can also give more context via an explicit prompt:
 
@@ -44,7 +47,9 @@ You can also generate and evaluate code inline with `viberun!`:
 ```rust
 use vibecode::viberun;
 
-let result = viberun!("Calculate the factorial of a number", 5);
+let my_number = 5;
+
+let result = viberun!("Calculate the factorial of a number", my_number);
 
 assert_eq!(result, 120);
 ```
