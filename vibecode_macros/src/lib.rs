@@ -1,3 +1,4 @@
+use darling::FromMeta;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{
@@ -7,17 +8,19 @@ use syn::{
     punctuated::Punctuated,
 };
 
+use crate::ai_responder::Complexity;
+
 mod ai_responder;
 mod attribute;
 mod function;
 mod openai;
 
-use darling::FromMeta;
-
 #[derive(Debug, FromMeta)]
 #[darling(derive_syn_parse)]
 struct VibecodeArgs {
     prompt: Option<String>,
+    #[darling(default = || Complexity::Low)]
+    complexity: Complexity,
 }
 
 #[proc_macro_attribute]
@@ -35,7 +38,7 @@ pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
         panic!("The function body must be empty");
     }
 
-    attribute::impl_vibecode(&item_string, args.prompt.as_deref())
+    attribute::impl_vibecode(&args.complexity, &item_string, args.prompt.as_deref())
 }
 
 struct ViberunArgs {
@@ -60,7 +63,8 @@ pub fn viberun(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as ViberunArgs);
 
     let args = &input.args;
-    let closure = function::impl_viberun(&input.prompt.value());
+    // TODO make complexity configurable
+    let closure = function::impl_viberun(&Complexity::Low, &input.prompt.value());
 
     let call_closure = quote! {
         (#closure)(#args)

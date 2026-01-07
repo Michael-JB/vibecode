@@ -26,7 +26,20 @@ let result = special_sort(vec![1, 4, 2, 3, 1]);
 assert_eq!(result, vec![4, 3, 2, 1, 1]);
 ```
 
-You can also generate and evaluate code inline:
+The complexity you configure determines the model used to generate the code:
+
+```rust
+use vibecode::vibecode;
+
+#[vibecode(complexity = "medium")]
+fn prime_numbers_below_limit(limit: u64) -> Vec<u64> {}
+
+let result = prime_numbers_below_limit(20);
+
+assert_eq!(result, vec![2, 3, 5, 7, 11, 13, 17, 19]);
+```
+
+You can also generate and evaluate code inline with `viberun!`:
 
 ```rust
 use vibecode::viberun;
@@ -41,4 +54,6 @@ assert_eq!(result, 120);
 - [x] Support attribute macro for function signatures
 - [x] Take user prompt as input to attribute macro
 - [x] Add function macro that takes user prompt as input
+- [x] Support configurable complexity in attribute macro
+- [ ] Support configurable complexity in function macro
 - [ ] Support injection of OpenAI-compatible API client

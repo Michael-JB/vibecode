@@ -35,6 +35,22 @@ mod tests {
     }
 
     #[test]
+    fn vibecode_accepts_complexity() {
+        // Given
+        #[vibecode(
+            prompt = "Compute all prime numbers up to the given limit",
+            complexity = "medium"
+        )]
+        fn primes(limit: u64) -> Vec<u64> {}
+
+        // When
+        let result = primes(20);
+
+        // Then
+        assert_eq!(result, vec![2, 3, 5, 7, 11, 13, 17, 19]);
+    }
+
+    #[test]
     fn viberun_accepts_prompt() {
         let result = viberun!("Multiply 3 and 4");
         assert_eq!(result, 12);

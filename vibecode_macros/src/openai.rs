@@ -1,4 +1,4 @@
-use crate::ai_responder::{AIError, AIResponder};
+use crate::ai_responder::{AIError, AIResponder, Complexity};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -24,6 +24,12 @@ struct Request {
     model: String,
     instructions: String,
     input: String,
+    reasoning: Reasoning,
+}
+
+#[derive(Serialize)]
+struct Reasoning {
+    effort: String,
 }
 
 #[derive(Deserialize)]
@@ -80,12 +86,30 @@ impl From<ureq::Error> for AIError {
     }
 }
 
+impl From<&Complexity> for &str {
+    fn from(complexity: &Complexity) -> Self {
+        match complexity {
+            Complexity::Low => "gpt-5-nano",
+            Complexity::Medium => "gpt-5-mini",
+            Complexity::High => "gpt-5.2",
+        }
+    }
+}
+
 impl AIResponder for OpenAI {
-    fn respond(&self, model: &str, instructions: &str, input: &str) -> Result<String, AIError> {
+    fn respond(
+        &self,
+        complexity: &Complexity,
+        instructions: &str,
+        input: &str,
+    ) -> Result<String, AIError> {
         let request = Request {
-            model: model.to_string(),
+            model: <&str>::from(complexity).to_string(),
             instructions: instructions.to_string(),
             input: input.to_string(),
+            reasoning: Reasoning {
+                effort: "low".to_string(),
+            },
         };
 
         let response = ureq::post(format!("{}/responses", self.url))
@@ -106,18 +130,19 @@ impl AIResponder for OpenAI {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]
     fn it_can_generate_response() {
         // Given
         let openai = OpenAI::default().unwrap();
-        let model = "gpt-5-nano";
+        let complexity = Complexity::Low;
         let instructions = "Repeat the input word.";
         let magic_word = "Pike";
 
         // When
-        let response = openai.respond(model, instructions, magic_word);
+        let response = openai.respond(&complexity, instructions, magic_word);
 
         // Then
         assert_eq!(response.unwrap(), magic_word);
