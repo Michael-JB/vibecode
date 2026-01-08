@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use proc_macro::TokenStream;
 use syn::{ExprClosure, ItemFn};
 
@@ -13,11 +13,8 @@ pub fn populate_function(
     let openai = OpenAI::default()?;
 
     let input = match prompt {
-        Some(p) => format!(
-            "Function signature:\n{}\n\nAdditional information:\n{}",
-            signature, p
-        ),
-        None => format!("Function signature:\n{}", signature),
+        Some(p) => format!("Function signature:\n{signature}\n\nAdditional information:\n{p}",),
+        None => format!("Function signature:\n{signature}"),
     };
 
     let response = openai.respond(
@@ -27,14 +24,14 @@ pub fn populate_function(
     )?;
 
     eprintln!("--- Vibecoded function ---");
-    eprintln!("{}", response);
+    eprintln!("{response}");
 
     // We lex & parse the vibecoded function to catch and wrap any syntax errors
     let lexed: TokenStream = response
         .parse()
-        .map_err(|e| anyhow::anyhow!("Failed to lex vibecoded function: {}", e))?;
-    let parsed: ItemFn = syn::parse(lexed)
-        .map_err(|e| anyhow::anyhow!("Failed to parse vibecoded function: {}", e))?;
+        .map_err(|e| anyhow!("Failed to lex vibecoded function: {e}"))?;
+    let parsed: ItemFn =
+        syn::parse(lexed).map_err(|e| anyhow!("Failed to parse vibecoded function: {e}"))?;
     Ok(parsed)
 }
 
@@ -48,12 +45,12 @@ pub fn generate_closure(complexity: &Complexity, prompt: &str) -> Result<ExprClo
     )?;
 
     eprintln!("--- Vibecoded closure ---");
-    eprintln!("{}", response);
+    eprintln!("{response}");
 
     syn::parse(
         response
             .parse()
-            .map_err(|e| anyhow::anyhow!("Failed to lex vibecoded closure: {}", e))?,
+            .map_err(|e| anyhow!("Failed to lex vibecoded closure: {e}"))?,
     )
-    .map_err(|e| anyhow::anyhow!("Failed to parse vibecoded closure: {}", e))
+    .map_err(|e| anyhow!("Failed to parse vibecoded closure: {e}"))
 }

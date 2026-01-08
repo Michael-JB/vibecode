@@ -1,4 +1,5 @@
 // #![warn(missing_docs)]
+#![warn(clippy::all, clippy::pedantic, clippy::cargo)]
 
 use darling::FromMeta;
 use proc_macro::TokenStream;
@@ -26,12 +27,12 @@ struct VibecodeArgs {
 
 #[proc_macro_attribute]
 pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
-    _vibecode(attribute.into(), item.into())
+    vibecode_inner(attribute.into(), item.into())
         .unwrap_or_else(|e| e.to_compile_error())
         .into()
 }
 
-fn _vibecode(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenStream2> {
+fn vibecode_inner(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenStream2> {
     let args: VibecodeArgs = syn::parse2(attribute)?;
     let item_string = item.to_string();
     let ast: ItemFn = syn::parse2(item)?;
@@ -46,10 +47,7 @@ fn _vibecode(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenSt
     let populated_function =
         vibecode::populate_function(&args.complexity, &item_string, args.prompt.as_deref())
             .map_err(|e| {
-                syn::Error::new_spanned(
-                    &ast.sig.ident,
-                    format!("Failed to vibecode function: {}", e),
-                )
+                syn::Error::new_spanned(&ast.sig.ident, format!("Failed to vibecode function: {e}"))
             })?;
 
     Ok(quote! { #populated_function })
@@ -74,19 +72,19 @@ impl Parse for ViberunArgs {
 
 #[proc_macro]
 pub fn viberun(input: TokenStream) -> TokenStream {
-    _viberun(input.into())
+    viberun_inner(input.into())
         .unwrap_or_else(|e| e.to_compile_error())
         .into()
 }
 
-fn _viberun(input: TokenStream2) -> syn::Result<TokenStream2> {
+fn viberun_inner(input: TokenStream2) -> syn::Result<TokenStream2> {
     let input: ViberunArgs = syn::parse2(input)?;
 
     let args = &input.args;
     // TODO make complexity configurable
     let closure =
         vibecode::generate_closure(&Complexity::Low, &input.prompt.value()).map_err(|e| {
-            syn::Error::new_spanned(&input.prompt, format!("Failed to vibecode closure: {}", e))
+            syn::Error::new_spanned(&input.prompt, format!("Failed to vibecode closure: {e}"))
         })?;
 
     Ok(quote! { (#closure)(#args) })

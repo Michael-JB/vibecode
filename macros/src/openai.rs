@@ -11,7 +11,7 @@ pub struct Auth {
 impl Auth {
     pub fn from_env() -> Result<Self> {
         let api_key = std::env::var("OPENAI_API_KEY")
-            .map_err(|e| anyhow!("Failed to read OPENAI_API_KEY from environment: {}", e))?;
+            .map_err(|e| anyhow!("Failed to read OPENAI_API_KEY from environment: {e}"))?;
         Ok(Auth { api_key })
     }
 }
@@ -59,12 +59,13 @@ impl Response {
             .iter()
             .filter_map(|out| match out {
                 Output::Message { content } => Some(content),
-                _ => None,
+                Output::Reasoning {} => None,
             })
             .flatten()
-            .find_map(|item| match item {
-                Content::OutputText { text } => Some(text.as_str()),
+            .map(|item| match item {
+                Content::OutputText { text } => text.as_str(),
             })
+            .next()
     }
 }
 
@@ -123,7 +124,7 @@ impl AIResponder for OpenAI {
 
         response
             .first_text()
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .ok_or(AIError::ModelOutputError(
                 "No text found in response".to_string(),
             ))
@@ -140,7 +141,7 @@ mod tests {
         // Given
         let openai = OpenAI::default().unwrap();
         let complexity = Complexity::Low;
-        let instructions = "Repeat the input word.";
+        let instructions = "Repeat the input word";
         let magic_word = "Pike";
 
         // When
