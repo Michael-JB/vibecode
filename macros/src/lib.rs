@@ -1,3 +1,5 @@
+// #![warn(missing_docs)]
+
 use darling::FromMeta;
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
@@ -29,18 +31,6 @@ pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
         .into()
 }
 
-struct ViberunArgs {
-    prompt: LitStr,
-    args: Punctuated<Expr, Token![,]>,
-}
-
-#[proc_macro]
-pub fn viberun(input: TokenStream) -> TokenStream {
-    _viberun(input.into())
-        .unwrap_or_else(|e| e.to_compile_error())
-        .into()
-}
-
 fn _vibecode(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenStream2> {
     let args: VibecodeArgs = syn::parse2(attribute)?;
     let item_string = item.to_string();
@@ -53,19 +43,21 @@ fn _vibecode(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenSt
         ));
     }
 
-    Ok(
+    let populated_function =
         vibecode::populate_function(&args.complexity, &item_string, args.prompt.as_deref())
             .map_err(|e| {
-                syn::Error::new_spanned(&ast.sig, format!("Failed to vibecode function: {}", e))
-            })?
-            .parse()
-            .map_err(|e| {
                 syn::Error::new_spanned(
-                    &ast.sig,
-                    format!("Failed to lex vibecoded function: {}", e),
+                    &ast.sig.ident,
+                    format!("Failed to vibecode function: {}", e),
                 )
-            })?,
-    )
+            })?;
+
+    Ok(quote! { #populated_function })
+}
+
+struct ViberunArgs {
+    prompt: LitStr,
+    args: Punctuated<Expr, Token![,]>,
 }
 
 impl Parse for ViberunArgs {
@@ -80,6 +72,13 @@ impl Parse for ViberunArgs {
     }
 }
 
+#[proc_macro]
+pub fn viberun(input: TokenStream) -> TokenStream {
+    _viberun(input.into())
+        .unwrap_or_else(|e| e.to_compile_error())
+        .into()
+}
+
 fn _viberun(input: TokenStream2) -> syn::Result<TokenStream2> {
     let input: ViberunArgs = syn::parse2(input)?;
 
@@ -90,7 +89,7 @@ fn _viberun(input: TokenStream2) -> syn::Result<TokenStream2> {
             syn::Error::new_spanned(&input.prompt, format!("Failed to vibecode closure: {}", e))
         })?;
 
-    Ok(quote! {(#closure)(#args)})
+    Ok(quote! { (#closure)(#args) })
 }
 
 #[cfg(test)]

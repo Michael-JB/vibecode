@@ -1,5 +1,6 @@
 use anyhow::Result;
-use syn::ExprClosure;
+use proc_macro::TokenStream;
+use syn::{ExprClosure, ItemFn};
 
 use crate::ai_responder::{AIResponder, Complexity};
 use crate::openai::OpenAI;
@@ -8,7 +9,7 @@ pub fn populate_function(
     complexity: &Complexity,
     signature: &str,
     prompt: Option<&str>,
-) -> Result<String> {
+) -> Result<ItemFn> {
     let openai = OpenAI::default()?;
 
     let input = match prompt {
@@ -28,7 +29,13 @@ pub fn populate_function(
     eprintln!("--- Vibecoded function ---");
     eprintln!("{}", response);
 
-    Ok(response)
+    // We lex & parse the vibecoded function to catch and wrap any syntax errors
+    let lexed: TokenStream = response
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Failed to lex vibecoded function: {}", e))?;
+    let parsed: ItemFn = syn::parse(lexed)
+        .map_err(|e| anyhow::anyhow!("Failed to parse vibecoded function: {}", e))?;
+    Ok(parsed)
 }
 
 pub fn generate_closure(complexity: &Complexity, prompt: &str) -> Result<ExprClosure> {
