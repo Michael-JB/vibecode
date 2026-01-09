@@ -1,4 +1,6 @@
-// #![warn(missing_docs)]
+//! Helper macros for the vibecode crate.
+
+#![warn(missing_docs)]
 #![warn(clippy::all, clippy::pedantic, clippy::cargo)]
 
 use darling::FromMeta;
@@ -25,6 +27,15 @@ struct VibecodeArgs {
     complexity: Complexity,
 }
 
+/// Attribute macro to vibecode a function implementation given its signature.
+///
+/// The function body must be empty.
+///
+/// Optional parameters:
+/// - prompt: Additional prompt to guide the vibecoding process. Use this to pass any extra
+/// information about the function that may not be captured in the signature.
+/// - complexity: The complexity of the function to vibecode. Can be "low", "medium", or "high".
+/// Defaults to "low". Vibecode will choose an appropriate model based on the complexity.
 #[proc_macro_attribute]
 pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
     vibecode_inner(attribute.into(), item.into())
@@ -70,6 +81,10 @@ impl Parse for ViberunArgs {
     }
 }
 
+/// Function macro to vibecode and execute a function inline.
+///
+/// The first parameter is a prompt string describing the function to vibecode. This is required.
+/// Subsequent parameters are variadic arguments to pass to the vibecoded function upon execution.
 #[proc_macro]
 pub fn viberun(input: TokenStream) -> TokenStream {
     viberun_inner(input.into())
