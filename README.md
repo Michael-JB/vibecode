@@ -1,7 +1,11 @@
 # vibecode
 
-Tired of fast, reproducible and secure builds? Introducing compile-time vibe
-coding!
+[![Docs](https://docs.rs/vibecode/badge.svg)](https://docs.rs/vibecode/)
+[![Crates.io Version](https://img.shields.io/crates/v/vibecode)](https://crates.io/crates/vibecode)
+[![Crates.io Total Downloads](https://img.shields.io/crates/d/vibecode)](https://crates.io/crates/vibecode)
+
+Tired of fast, reproducible and secure builds? Try compile-time vibe coding
+instead.
 
 ```rust
 use vibecode::vibecode;
@@ -16,7 +20,11 @@ assert_eq!(result, 111); // That's numberwang!
 
 ## Tell me more!
 
-You can also give more context via an explicit prompt, and the complexity you
+The `vibecode` procedural macro generates the body of the annotated function at
+compile time using an LLM. At present, vibecode only supports OpenAI; you'll
+need to set the `OPENAI_API_KEY` environment variable to compile your code.
+
+You can provide more context via an explicit prompt. The complexity you
 configure determines the model used to generate the code:
 
 ```rust
@@ -41,12 +49,3 @@ let result = viberun!("Calculate the factorial of a number", my_number);
 
 assert_eq!(result, 120);
 ```
-
-## TODOs
-
-- [x] Support attribute macro for function signatures
-- [x] Take user prompt as input to attribute macro
-- [x] Add function macro that takes user prompt as input
-- [x] Support configurable complexity in attribute macro
-- [ ] Support configurable complexity in function macro
-- [ ] Support injection of OpenAI-compatible API client

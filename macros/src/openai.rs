@@ -111,6 +111,7 @@ impl AIResponder for OpenAI {
             instructions: instructions.to_string(),
             input: input.to_string(),
             reasoning: Reasoning {
+                // TODO this should probably depend on complexity
                 effort: "low".to_string(),
             },
         };
