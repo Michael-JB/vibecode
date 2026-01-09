@@ -2,6 +2,12 @@
 name = "vibecode-macros"
 version.workspace = true
 edition.workspace = true
+description = "Macros for the vibecode crate."
+repository.workspace = true
+license-file.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [lib]
 proc-macro = true

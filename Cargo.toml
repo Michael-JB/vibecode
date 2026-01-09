@@ -4,11 +4,26 @@ members = ["macros"]
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
+description = "Compile-time vibe coding."
+repository = "https://github.com/Michael-JB/vibecode"
+license-file = "LICENSE"
+authors = ["Michael <michael@ramyun.co.uk>"]
+keywords = ["vibecode", "macro", "openai"]
+categories = ["development-tools"]
+exclude = [
+  ".github/**",
+]
 
 [package]
 name = "vibecode"
 version.workspace = true
 edition.workspace = true
+description.workspace = true
+repository.workspace = true
+license-file.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 vibecode-macros = { path = "macros", version = "0.1.0" }
