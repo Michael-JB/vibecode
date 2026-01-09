@@ -16,30 +16,18 @@ assert_eq!(result, 111); // That's numberwang!
 
 ## Tell me more!
 
-You can also give more context via an explicit prompt:
+You can also give more context via an explicit prompt, and the complexity you
+configure determines the model used to generate the code:
 
 ```rust
 use vibecode::vibecode;
 
-#[vibecode(prompt = "Sort in descending order")]
-fn special_sort(xs: Vec<u64>) -> Vec<u64> {}
-
-let result = special_sort(vec![1, 4, 2, 3, 1]);
-
-assert_eq!(result, vec![4, 3, 2, 1, 1]);
-```
-
-The complexity you configure determines the model used to generate the code:
-
-```rust
-use vibecode::vibecode;
-
-#[vibecode(complexity = "medium")]
+#[vibecode(prompt = "Return sorted in descending order", complexity = "medium")]
 fn prime_numbers_below_limit(limit: u64) -> Vec<u64> {}
 
 let result = prime_numbers_below_limit(20);
 
-assert_eq!(result, vec![2, 3, 5, 7, 11, 13, 17, 19]);
+assert_eq!(result, vec![19, 17, 13, 11, 7, 5, 3, 2]);
 ```
 
 You can also generate and evaluate code inline with `viberun!`:
