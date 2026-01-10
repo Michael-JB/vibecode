@@ -2,7 +2,7 @@
 members = ["macros"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "Compile-time vibe coding."
 repository = "https://github.com/Michael-JB/vibecode"
@@ -26,7 +26,7 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-vibecode-macros = { path = "macros", version = "0.1.1" }
+vibecode-macros = { path = "macros", version = "0.1.2" }
 
 [dev-dependencies]
 trybuild = "1.0.114"
