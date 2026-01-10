@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "build"
       include: "scope"
@@ -13,7 +13,7 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/macros"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "build"
       include: "scope"
@@ -22,7 +22,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "build"
       include: "scope"
