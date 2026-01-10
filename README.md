@@ -10,11 +10,9 @@ Tired of fast, reproducible and secure builds? Try compile-time vibe coding.
 use vibecode::vibecode;
 
 #[vibecode]
-fn sum(xs: Vec<i32>) -> i32 {}
+fn absolute_sum(xs: Vec<i32>) -> u64 {}
 
-let result = sum(vec![27, 14, 42, -4, 32]);
-
-assert_eq!(result, 111); // That's numberwang!
+assert_eq!(absolute_sum(vec![-41, 42, 28]), 111); // That's numberwang!
 ```
 
 ## Tell me more!
@@ -40,11 +38,9 @@ configure determines the model `vibecode` uses to generate the code:
 use vibecode::vibecode;
 
 #[vibecode(prompt = "Return sorted in descending order", complexity = "medium")]
-fn prime_numbers_below_limit(limit: u64) -> Vec<u64> {}
+fn prime_numbers_below(limit: u64) -> Vec<u64> {}
 
-let result = prime_numbers_below_limit(20);
-
-assert_eq!(result, vec![19, 17, 13, 11, 7, 5, 3, 2]);
+assert_eq!(prime_numbers_below(12), vec![11, 7, 5, 3, 2]);
 ```
 
 ### viberun!
