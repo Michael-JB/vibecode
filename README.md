@@ -56,3 +56,7 @@ let result = viberun!("Calculate the factorial of a number", my_number);
 
 assert_eq!(result, 120);
 ```
+
+## License
+
+[MIT License](LICENSE)
