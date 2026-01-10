@@ -6,3 +6,10 @@ name = "vibecode"
 changelog_update = true
 changelog_path = "CHANGELOG.md"
 changelog_include = ["vibecode-macros"]
+
+[changelog]
+commit_parsers = [
+  { message = "^feat", group = "added" },
+  { message = "^change", group = "changed" },
+  { message = "^fix", group = "fixed" },
+]

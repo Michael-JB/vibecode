@@ -9,17 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1](https://github.com/Michael-JB/vibecode/compare/vibecode-v0.1.0...vibecode-v0.1.1) - 2026-01-10
 
-### Other
+### Added
 
 - add CHANGELOG.md
-- update permissions in release step
-- *(deps)* bump actions/checkout from 4 to 6
-- disable doc_markdown lint
 - add install instructions to README.md
-- reduce frequency of dependabot checks
-- add check workflow
 - add API key requirement to documentation
-- add dependabot
-- add release-plz
 - add README.md to vibecode-macros crate
-- make vibecode invariant to client
