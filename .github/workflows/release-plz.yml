@@ -12,6 +12,7 @@ jobs:
     name: Release-plz release
     runs-on: ubuntu-latest
     permissions:
+      pull-requests: read
       contents: write
     steps:
       - &checkout
