@@ -13,7 +13,7 @@ use syn::{
     punctuated::Punctuated,
 };
 
-use crate::ai_responder::Complexity;
+use crate::{ai_responder::Complexity, openai::OpenAI};
 
 mod ai_responder;
 mod openai;
@@ -32,10 +32,10 @@ struct VibecodeArgs {
 /// The function body must be empty.
 ///
 /// Optional parameters:
-/// - prompt: Additional prompt to guide the vibecoding process. Use this to pass any extra
-/// information about the function that may not be captured in the signature.
-/// - complexity: The complexity of the function to vibecode. Can be "low", "medium", or "high".
-/// Defaults to "low". Vibecode will choose an appropriate model based on the complexity.
+///   - prompt: Additional prompt to guide the vibecoding process. Use this to pass any extra
+///     information about the function that may not be captured in the signature.
+///   - complexity: The complexity of the function to vibecode. Can be "low", "medium", or "high".
+///     Defaults to "low". Vibecode will choose an appropriate model based on the complexity.
 #[proc_macro_attribute]
 pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
     vibecode_inner(attribute.into(), item.into())
@@ -44,6 +44,13 @@ pub fn vibecode(attribute: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn vibecode_inner(attribute: TokenStream2, item: TokenStream2) -> syn::Result<TokenStream2> {
+    let openai = OpenAI::default().map_err(|e| {
+        syn::Error::new_spanned(
+            &attribute,
+            format!("Failed to initialize OpenAI client: {e}"),
+        )
+    })?;
+
     let args: VibecodeArgs = syn::parse2(attribute)?;
     let item_string = item.to_string();
     let ast: ItemFn = syn::parse2(item)?;
@@ -55,11 +62,15 @@ fn vibecode_inner(attribute: TokenStream2, item: TokenStream2) -> syn::Result<To
         ));
     }
 
-    let populated_function =
-        vibecode::populate_function(&args.complexity, &item_string, args.prompt.as_deref())
-            .map_err(|e| {
-                syn::Error::new_spanned(&ast.sig.ident, format!("Failed to vibecode function: {e}"))
-            })?;
+    let populated_function = vibecode::populate_function(
+        &openai,
+        &args.complexity,
+        &item_string,
+        args.prompt.as_deref(),
+    )
+    .map_err(|e| {
+        syn::Error::new_spanned(&ast.sig.ident, format!("Failed to vibecode function: {e}"))
+    })?;
 
     Ok(quote! { #populated_function })
 }
@@ -93,12 +104,16 @@ pub fn viberun(input: TokenStream) -> TokenStream {
 }
 
 fn viberun_inner(input: TokenStream2) -> syn::Result<TokenStream2> {
+    let openai = OpenAI::default().map_err(|e| {
+        syn::Error::new_spanned(&input, format!("Failed to initialize OpenAI client: {e}"))
+    })?;
+
     let input: ViberunArgs = syn::parse2(input)?;
 
     let args = &input.args;
     // TODO make complexity configurable
-    let closure =
-        vibecode::generate_closure(&Complexity::Low, &input.prompt.value()).map_err(|e| {
+    let closure = vibecode::generate_closure(&openai, &Complexity::Low, &input.prompt.value())
+        .map_err(|e| {
             syn::Error::new_spanned(&input.prompt, format!("Failed to vibecode closure: {e}"))
         })?;
 
