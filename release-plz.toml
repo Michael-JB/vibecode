@@ -12,4 +12,5 @@ commit_parsers = [
   { message = "^feat", group = "added" },
   { message = "^change", group = "changed" },
   { message = "^fix", group = "fixed" },
+  { message = "^.*", skip = true },
 ]
