@@ -3,8 +3,8 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AIError {
-    #[error("network failure: {0}")]
-    NetworkError(String),
+    #[error("API usage error: {0}")]
+    ApiError(String),
 
     #[error("received invalid output from model: {0}")]
     ModelOutputError(String),

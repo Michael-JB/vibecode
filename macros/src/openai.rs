@@ -85,7 +85,7 @@ impl OpenAI {
 
 impl From<ureq::Error> for AIError {
     fn from(err: ureq::Error) -> Self {
-        AIError::NetworkError(err.to_string())
+        AIError::ApiError(err.to_string())
     }
 }
 
@@ -136,6 +136,31 @@ impl AIResponder for OpenAI {
 mod tests {
 
     use super::*;
+    use mockito::Server;
+
+    impl Auth {
+        pub fn invalid() -> Self {
+            Auth {
+                api_key: "invalid".into(),
+            }
+        }
+    }
+
+    impl OpenAI {
+        pub fn with_url(self, url: String) -> Self {
+            OpenAI {
+                auth: self.auth,
+                url,
+            }
+        }
+
+        pub fn with_auth(self, auth: Auth) -> Self {
+            OpenAI {
+                auth,
+                url: self.url.clone(),
+            }
+        }
+    }
 
     #[test]
     fn it_can_generate_response() {
@@ -150,5 +175,50 @@ mod tests {
 
         // Then
         assert_eq!(response.unwrap(), magic_word);
+    }
+
+    #[test]
+    fn it_handles_invalid_api_key() {
+        // Given
+        let openai = OpenAI::default().unwrap().with_auth(Auth::invalid());
+
+        // When
+        let result = openai.respond(&Complexity::Low, "instructions", "input");
+
+        // Then
+        assert!(matches!(result.unwrap_err(), AIError::ApiError(_)));
+    }
+
+    #[test]
+    fn it_handles_api_error() {
+        // Given
+        let mut server = Server::new();
+        server.mock("POST", "/responses").with_status(500).create();
+        let openai = OpenAI::default().unwrap().with_url(server.url());
+
+        // When
+        let result = openai.respond(&Complexity::Low, "instructions", "input");
+
+        // Then
+        assert!(matches!(result.unwrap_err(), AIError::ApiError(_)));
+    }
+
+    #[test]
+    fn it_handles_model_output_error() {
+        // Given
+        let mut server = Server::new();
+        server
+            .mock("POST", "/responses")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"output":[]}"#)
+            .create();
+        let openai = OpenAI::default().unwrap().with_url(server.url());
+
+        // When
+        let result = openai.respond(&Complexity::Low, "instructions", "input");
+
+        // Then
+        assert!(matches!(result.unwrap_err(), AIError::ModelOutputError(_)));
     }
 }
