@@ -10,9 +10,11 @@ Tired of fast, reproducible and secure builds? Try compile-time vibe coding.
 use vibecode::vibecode;
 
 #[vibecode]
-fn absolute_sum(xs: Vec<i32>) -> u64 {}
+fn sum(xs: Vec<i32>) -> i32 {}
 
-assert_eq!(absolute_sum(vec![-41, 42, 28]), 111); // That's numberwang!
+let result = sum(vec![42, 86, -17]);
+
+assert_eq!(result, 111); // That's numberwang!
 ```
 
 ## Tell me more!
