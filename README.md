@@ -59,6 +59,11 @@ let result = viberun!("Calculate the factorial of a number", my_number);
 assert_eq!(result, 120);
 ```
 
+## Credits
+
+The idea for this crate came from [Markus](https://github.com/pacman82),
+[Moritz](https://github.com/moldhouse) and [Max](https://github.com/MaxHam).
+
 ## License
 
 [MIT License](LICENSE)
